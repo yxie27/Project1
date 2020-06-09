@@ -1,8 +1,6 @@
 Project 1
 ================
 
-add a line
-
 ``` r
 #load the tidyverse package
 library(tidyverse)
