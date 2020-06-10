@@ -1,0 +1,64 @@
+---
+title: "Project 1"
+output: rmarkdown::github_document
+---
+
+```{r message=FALSE}
+#load the tidyverse package
+library(tidyverse)
+#load the httr and jsonlite packages
+library(httr)
+library(jsonlite)
+```
+
+```{r message=FALSE}
+#write a function
+myfunc <- function(x){
+  full_url <- paste0("https://records.nhl.com/site/api", "/", x)
+  #Returns id, firstSeasonId and lastSeasonId and name of every team in the history of the NHL
+  if(x == "franchise"){
+    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+    data <- franchise$data %>% select(id,firstSeasonId,lastSeasonId,teamCommonName)
+    tbl_df(data)
+  }
+  #Returns Total stats for every franchise
+  else if(x == "franchise-team-totals"){
+    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+    data <- franchise$data %>% select(id,roadTies,roadWins)
+    tbl_df(data)
+  }
+  #Drill-down into season records for a specific franchise
+  else if (x %in% "franchise-season-records?cayenneExp=franchiseId="){
+    franchiseId <- substr(x, 49, 50)
+    #convert a character vector to a numeric vector
+    franchiseId <- as.numeric(franchiseId)
+    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+    franchise$data %>% filter(id == franchiseId)
+  }
+  #Goalie records for the specified franchise
+  else if (x %in% "franchise-goalie-records?cayenneExp=franchiseId="){
+    franchiseId <- substr(x, 49, 52)
+    #convert a character vector to a numeric vector
+    franchiseId <- as.numeric(franchiseId)
+    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+    franchise$data %>% filter(id == franchiseId)
+  }
+  #Skater records, same interaction as goalie endpoint
+  else if (x %in% "franchise-skater-records?cayenneExp=franchiseId="){
+    franchiseId <- substr(x, 49, 53)
+    #convert a character vector to a numeric vector
+    franchiseId <- as.numeric(franchiseId)
+    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+    franchise$data %>% filter(id == franchiseId)
+  }
+}
+myfunc("franchise")
+myfunc("franchise-team-totals")
+myfunc("franchise-season-records?cayenneExp=franchiseId=10")
+myfunc("franchise-goalie-records?cayenneExp=franchiseId=235")
+myfunc("franchise-skater-records?cayenneExp=franchiseId=16891")
+#attributes(franchise)
+#franchise$data
+```
+
+
