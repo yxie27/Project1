@@ -1,7 +1,32 @@
 ---
 title: "Project 1"
-output: rmarkdown::github_document
+author: "Yilin Xie"
+date: "June 12, 2020"
+output: 
+  rmarkdown::github_document:
+    toc: yes
 ---
+
+## Data type (JSON) description
+
+### What it is
+
+JSON, short for JavaScript Object Notation, is a data exchange format. It is a data format popularized by Douglas Crockford in 2001 (<https://www.json.org/json-en.html>), became the mainstream data format since 2005-2006. JSON comes in a text format that is completely independent of any programming language, making it an ideal data exchange language. JSON is the syntax for storing and exchanging textual information, similar to XML. 
+
+### Where it gets used
+
+There is no other place where JSON is broadly used more than the Web. Now the data interface basically returns JSON, and the detailed scenarios include:
+
+   * Ajxa accesses data asynchronously
+   * RPC remote call
+   * The front and back end separate the data returned by the back end
+   * Open API, such as Baidu, Aude and other open interfaces
+   * Interface for cooperation between enterprises
+   * Simplify object creation in JS
+
+### Why it is a good way to store data
+
+JSON was born because the details of XML integration into HTML vary from browser to browser. One drawback of XML formats, however, is the complexity of document construction and the need to transfer more bytes. In this case, JSON's portability gained traction, replacing XML as the dominant data transfer format. JSON is smaller, faster, and easier to parse than XML. The biggest difference between XML and JSON is that it is full of redundant information. Most of the time we don't need redundant information, but we just can't do without it when we need it. This is the biggest difference between XML and JSON. Json exists as a typical 20% feature that addresses 80% of the requirements. In other words, the fly swatter is found to be more handy where a cannon would have to be used against mosquitoes. The concise and clear hierarchy makes JSON an ideal data exchange language. Easy to read and write, and also easy to machine parsing and generation, and effectively improve the network transmission efficiency.
 
 ```{r message=FALSE}
 #load the tidyverse package
