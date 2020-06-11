@@ -64,56 +64,179 @@ library(httr)
 library(jsonlite)
 ```
 
-
+### franchise
 
 ```{r message=FALSE}
-#write a function
-myfunc <- function(x){
-  full_url <- paste0("https://records.nhl.com/site/api", "/", x)
-  #Returns id, firstSeasonId and lastSeasonId and name of every team in the history of the NHL
-  if(x == "franchise"){
-    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
-    data <- franchise$data %>% select(id,firstSeasonId,lastSeasonId,teamCommonName)
-    tbl_df(data)
-  }
-  #Returns Total stats for every franchise
-  else if(x == "franchise-team-totals"){
-    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
-    data <- franchise$data %>% select(id,roadTies,roadWins)
-    tbl_df(data)
-  }
-  #Drill-down into season records for a specific franchise
-  else if (x %in% "franchise-season-records?cayenneExp=franchiseId="){
-    franchiseId <- substr(x, 49, 50)
-    #convert a character vector to a numeric vector
-    franchiseId <- as.numeric(franchiseId)
-    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
-    franchise$data %>% filter(id == franchiseId)
-  }
-  #Goalie records for the specified franchise
-  else if (x %in% "franchise-goalie-records?cayenneExp=franchiseId="){
-    franchiseId <- substr(x, 49, 52)
-    #convert a character vector to a numeric vector
-    franchiseId <- as.numeric(franchiseId)
-    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
-    franchise$data %>% filter(id == franchiseId)
-  }
-  #Skater records, same interaction as goalie endpoint
-  else if (x %in% "franchise-skater-records?cayenneExp=franchiseId="){
-    franchiseId <- substr(x, 49, 53)
-    #convert a character vector to a numeric vector
-    franchiseId <- as.numeric(franchiseId)
-    franchise <- GET(full_url) %>% content("text") %>% fromJSON(flatten=TRUE)
-    franchise$data %>% filter(id == franchiseId)
-  }
-}
-myfunc("franchise")
-myfunc("franchise-team-totals")
-myfunc("franchise-season-records?cayenneExp=franchiseId=10")
-myfunc("franchise-goalie-records?cayenneExp=franchiseId=235")
-myfunc("franchise-skater-records?cayenneExp=franchiseId=16891")
-#attributes(franchise)
-#franchise$data
+franchise_url <- "https://records.nhl.com/site/api/franchise" 
+franchise <- GET(franchise_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+```
+```{r results = 'asis'}
+knitr::kable(franchise$data, 
+             caption = "Table 1.Franchise") ## assign the name of table by 'caption = ""'
 ```
 
 
+### franchise team
+
+```{r message=FALSE}
+team_url <- "https://records.nhl.com/site/api/franchise-team-totals"
+team <- GET(team_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+```
+```{r results = 'asis'}
+knitr::kable(team$data, 
+             caption = "Table 2.Total stats for every franchise")
+```
+
+### franchise season records
+
+You can assign a certain value to specify the franchise in column **franchiseId** and **franchiseName**. This is applicable to the following three tables.
+```{r message=FALSE}
+## combine all JSON files so that make it possible to apply interactive filtering
+season<-data.frame()
+for (i in 1:40){
+  season_url <- paste("https://records.nhl.com/site/api/franchise-season-records?cayenneExp=franchiseId",i,collapse="",sep = "=")
+  season0 <- GET(season_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+  season <- rbind(season, season0$data)
+}
+## put the two columns first for the user to find easily
+season1 <- subset(season, select=-c(franchiseId, franchiseName))
+col <- colnames(season1)
+new_col <- c(col[1], "franchiseId","franchiseName", col[2:length(col)]) ## specify the order of columns
+season2 <- season[new_col] ## arrange the columns in the specified order
+```
+```{r}
+## interactive table for users to specify the franchise
+datatable(season2, 
+          filter = 'top', 
+          rownames = FALSE,
+          caption = 'Table 3.Season records for a specific franchise')
+```
+
+### franchise goalie records
+
+```{r message=FALSE}
+goalie<-data.frame()
+for (i in 1:40){
+  goalie_url <- paste("https://records.nhl.com/site/api/franchise-goalie-records?cayenneExp=franchiseId",i,collapse="",sep = "=")
+  goalie0 <- GET(goalie_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+  goalie <- rbind(goalie, goalie0$data)
+}
+goalie1 <- subset(goalie, select=-c(franchiseId, franchiseName))
+col <- colnames(goalie1)
+new_col <- c(col[1], "franchiseId", "franchiseName", col[2:length(col)])
+goalie2 <- goalie[new_col]
+```
+```{r}
+datatable(goalie2, 
+          filter = 'top', 
+          rownames = FALSE,
+          caption = 'Table 4.Goalie records for a specified franchise')
+```
+
+
+### franchise skater records
+```{r message=FALSE}
+skater<-data.frame()
+for (i in 1:40){
+  skater_url <- paste("https://records.nhl.com/site/api/franchise-skater-records?cayenneExp=franchiseId",i,collapse="",sep = "=")
+  skater0 <- GET(skater_url) %>% content("text") %>% fromJSON(flatten=TRUE)
+  skater <- rbind(skater, skater0$data)
+}
+skater1 <- subset(skater, select=-c(franchiseId, franchiseName))
+col <- colnames(skater1)
+new_col <- c(col[1], "franchiseId", "franchiseName", col[2:length(col)])
+skater2 <- skater[new_col]
+```
+```{r warning=FALSE}
+datatable(skater2, 
+          filter = 'top',
+          rownames = FALSE,
+          caption = 'Table 5.Skater records for the specified franchise')
+```
+
+## Data analysis
+### Creation of relevant new variable
+This part is done with dataset **franchise team** which contains total stats for every franchise.
+```{r message=FALSE, warning=FALSE}
+## ratio and difference of goals for and goals against
+team <- mutate(team$data, ratio=goalsFor/goalsAgainst)
+team <- mutate(team, diff=goalsFor-goalsAgainst)
+## home ice advantage
+team <- mutate(team, homeAd=homeWins/wins)
+## home ice disadvantage
+team <- mutate(team, homeDis=homeLosses/losses)
+## win rate
+team <- mutate(team, winRate=wins/gamesPlayed)
+```
+
+### Calculation of relevant numeric & graphical summaries
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+```
+
+
+```{r}
+## a contingency table of active goalies of five franchises
+goalie2 %>% filter(franchiseId<=5) %>% with(table(activePlayer,franchiseName)) ## use 'table()' to create a contingency table
+```
+
+The contingency table includes the teams with ID 1 to 5, Montréal Canadiens, Montreal Wanderers, St. Louis Eagles, Hamilton Tigers, Toronto Maple Leafs, respectively. This table counts active goalie players of each franchise. Three of franchises have no active players, and the total munber of goalie players is small. Toronto Maple Leafs, besides the total number of players is higher than that of Montreal Canadiens, the proportion of active players is higher.
+
+
+```{r}
+## comparison of goalies of Montréal Canadiens and Los Angeles Kings by numeric summaries of two franchises
+MC <- goalie2 %>% filter(franchiseId == "1") %>% select(activePlayer, gamesPlayed, losses, seasons, wins, mostGoalsAgainstOneGame, mostSavesOneGame, mostShotsAgainstOneGame, mostWinsOneSeason) 
+apply(as.matrix(MC), 2,
+      function(x)
+        c(n = sum(!is.na(x)),
+        mean = mean(x, na.rm=TRUE),
+        sd = sd(x, na.rm=TRUE),
+        min = min(x, na.rm=TRUE),
+        max = max(x, na.rm=TRUE),
+        range = max(x, na.rm=TRUE)-min(x, na.rm=TRUE))) %>% knitr::kable(caption = "Table 7a. Summary of goalies of Montréal Canadiens")
+LAK <- goalie2 %>% filter(franchiseId == "14") %>% select(activePlayer, gamesPlayed, losses, seasons, wins, mostGoalsAgainstOneGame, mostSavesOneGame, mostShotsAgainstOneGame, mostWinsOneSeason) 
+apply(as.matrix(LAK), 2,
+      function(x)
+        c(n = sum(!is.na(x)),
+        mean = mean(x, na.rm=TRUE),
+        sd = sd(x, na.rm=TRUE),
+        min = min(x, na.rm=TRUE),
+        max = max(x, na.rm=TRUE),
+        range = max(x, na.rm=TRUE)-min(x, na.rm=TRUE))) %>% knitr::kable(caption = "Table 7b. Summary of goalies of Los Angeles Kings")
+```
+
+Table 7 shows the goalie performance of the Montreal Canadiens (MC) and the Los Angeles Kings (LAK). MC has 37 goalies and LAK has 43 goalies. MC goalies have more experience, averagely participateed in 123 games, about 1.5 times as many as LAK did. The average number of wins for MC goalies is twice that of LAK goalies, but this does not mean that MC goalies perform better. It can be inferred from the *mostSavesOneGame* that MC goalies' winning rates may be due to strong teammates and poor performance compared to LAK goalies. From the perspective of SD and Range, MC goalkeeper's strength is more uneven, while LAK goalkeeper's strength is more balanced.
+
+```{r}
+## a bar plot of skaters of each franchise
+p <- ggplot(data = skater2,
+            mapping = aes(x = franchiseName, fill = franchiseName )) + geom_bar() + coord_flip() + labs(x = "franchise", y = "total number of skaters", title = "Figure 1. The total number of skaters of each franchise") + theme(legend.position = "none")
+p
+```
+
+Figure 1 shows the total number of skaters each franchise has. As can be seen from the figure, the size of the teams varies greatly. About half of all franchise have more than 500 skaters, with the New York Rangers leading the way with nearly 1,000. Some, like the Montreal Wanderers, Vegas Golden Knights, Phiadelphia Flyers and Hamilton Tigers, are small and pitiable. If you want to know the exact number of players for these teams, you can filter them using interaction in Table 5.
+
+```{r warning=FALSE}
+## a box plot of skater's goals of each franchise
+bp <- ggplot(data = skater2,
+             mapping = aes(x = franchiseName, y = log(goals), fill = franchiseName)) + geom_boxplot() + coord_flip() + labs(x = "franchise", title = "Figure 2. The total goals scored by skaters of each franchise") + theme(legend.position = "none")
+bp
+```
+
+Figure 2 shows the distribution of goals scored by players on each franchise. Because the high numerical value is too discrete, we take the logarithm of goal. From the data distribution, we can find that the score dispersion degree of most franchises is similar, although there is a certain difference in scoring ability. The numbers of skaters of Montreal Wanderers and Vegas Golden Knights teams are relatively small, but the goals of the Montreal Wanderers are ridiculously low, while the goals of the Vegas Golden Knights team are at the top of all the teams, so it can be said that they are small but good.
+
+
+```{r, fig.height=4, fig.width=5} 
+## a scatter plot of skater's points of each franchise
+## to better present the figure, you can assign its size by ```{r, fig.height=4, fig.width=5} 
+sp <- ggplot(data = skater2, 
+             mapping = aes(
+               x = assists,
+               y = goals,
+               color = franchiseName
+             )) + geom_point(alpha = 0.4) + labs(title = "Figure 3.The relationship between goals and assists scored by skaters of each franchise")+ theme(legend.position = "bottom")
+sp
+
+```
+
+Figure 3 shows the relationship between goals and assists of each skater. On the whole, the number of goals has a positive correlation with the number of assists gained, about assists =1.5*goals. But for each player's specific performance, the total number of assists and points the total difference is still relatively large. Most players have less than 300 assists and score less than 200 points.
