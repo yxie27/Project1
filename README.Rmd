@@ -5,6 +5,7 @@ date: "June 12, 2020"
 output: 
   rmarkdown::github_document:
     toc: true
+    toc_depth: 4
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### What it is
 
-JSON, short for JavaScript Object Notation, is a data exchange format. It is a data format popularized by Douglas Crockford in 2001 (<https://www.json.org/json-en.html>), became the mainstream data format since 2005-2006. JSON comes in a text format that is completely independent of any programming language, making it an ideal data exchange language. JSON is the syntax for storing and exchanging textual information, similar to XML. 
+JSON, short for JavaScript Object Notation, is a data exchange format. It is a data format popularized by Douglas Crockford in 2001 (<https://www.json.org/json-en.html>), which became the mainstream data format since 2005-2006. JSON comes in a text format that is completely independent of any programming language, making it an ideal data exchange language. JSON is the syntax for storing and exchanging textual information, similar to XML. 
 
 ### Where it gets used
 
@@ -48,11 +49,12 @@ Primaryly, there are three packages used for reading JSON data into R, which are
 
 `jsonlite` started from 2013 but has been completely rewritten in recent versions. Like `RJSONIO`, it also provides functions, such as *fromJSON()* and *toJSON() *to convert between JSON data and R objects. It could also interact with web APIs, building pipelines and streaming data between R and JSON.  
 
+### The one I’ve chosen it
 I would choose `jsonlite` in to practice for several reasons:  
 
-  * `jsonlite` provides base64_dec and base64_enc to convert between raw vectors to text while the other two packages don’t have this function. 
-  * Validating strings in JSON format is provided by `RJSONIO` (isJSONValid function) and `jsonlite` (validate) while `rjson` doesn’t have. 
-  * `jsonlite` also provides the capability of re-formatting JSON file into: 1). structure with indentation added from prettify, 2). file by removing all unnecessary indentation and white spaces which is actually adopted by a lot of JavaScript libraries. 
+  * `jsonlite` provides base64_dec and base64_enc to convert between raw vectors to text while the other two packages don’t have this function.  
+  * Validating strings in JSON format is provided by `RJSONIO` (isJSONValid function) and `jsonlite` (validate) while `rjson` doesn’t have.  
+  * `jsonlite` also provides the capability of re-formatting JSON file into: 1). structure with indentation added from prettify, 2). file by removing all unnecessary indentation and white spaces which is actually adopted by a lot of JavaScript libraries.  
   
   
 For further information, [this page](https://rstudio-pubs-static.s3.amazonaws.com/31702_9c22e3d1a0c44968a4a1f9656f1800ab.html) gives readers a brief comparison between three packages.
@@ -178,7 +180,7 @@ team <- mutate(team, winRate=wins/gamesPlayed)
 library(ggplot2)
 ```
 
-
+#### Some contingency tables and numeric summaries
 ```{r}
 ## a contingency table of active goalies of five franchises
 goalie2 %>% filter(franchiseId<=5) %>% with(table(activePlayer,franchiseName)) ## use 'table()' to create a contingency table
@@ -211,6 +213,8 @@ apply(as.matrix(LAK), 2,
 
 Table 7 shows the goalie performance of the Montreal Canadiens (MC) and the Los Angeles Kings (LAK). MC has 37 goalies and LAK has 43 goalies. MC goalies have more experience, averagely participateed in 123 games, about 1.5 times as many as LAK did. The average number of wins for MC goalies is twice that of LAK goalies, but this does not mean that MC goalies perform better. It can be inferred from the *mostSavesOneGame* that MC goalies' winning rates may be due to strong teammates and poor performance compared to LAK goalies. From the perspective of SD and Range, MC goalkeeper's strength is more uneven, while LAK goalkeeper's strength is more balanced.
 
+#### A side-by-side bar plot with coloring
+
 ```{r}
 ## a bar plot of skaters of each franchise
 p <- ggplot(data = skater2,
@@ -219,6 +223,8 @@ p
 ```
 
 Figure 1 shows the total number of skaters each franchise has. As can be seen from the figure, the size of the teams varies greatly. About half of all franchise have more than 500 skaters, with the New York Rangers leading the way with nearly 1,000. Some, like the Montreal Wanderers, Vegas Golden Knights, Phiadelphia Flyers and Hamilton Tigers, are small and pitiable. If you want to know the exact number of players for these teams, you can filter them using interaction in Table 5.
+
+#### A side-by-side box plots with coloring
 
 ```{r warning=FALSE}
 ## a box plot of skater's goals of each franchise
@@ -229,10 +235,11 @@ bp
 
 Figure 2 shows the distribution of goals scored by players on each franchise. Because the high numerical value is too discrete, we take the logarithm of goal. From the data distribution, we can find that the score dispersion degree of most franchises is similar, although there is a certain difference in scoring ability. The numbers of skaters of Montreal Wanderers and Vegas Golden Knights teams are relatively small, but the goals of the Montreal Wanderers are ridiculously low, while the goals of the Vegas Golden Knights team are at the top of all the teams, so it can be said that they are small but good.
 
+#### A scatter plots with coloring
 
-```{r, fig.height=4, fig.width=5} 
+```{r, fig.height=7, fig.width=10} 
 ## a scatter plot of skater's points of each franchise
-## to better present the figure, you can assign its size by ```{r, fig.height=4, fig.width=5} 
+## to better present the figure, you can assign its size by ```{r, fig.height=7, fig.width=10} 
 sp <- ggplot(data = skater2, 
              mapping = aes(
                x = assists,

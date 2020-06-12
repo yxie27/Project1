@@ -13,6 +13,7 @@ June 12, 2020
       - [rjson](#rjson)
       - [RJSONIO](#rjsonio)
       - [jsonlite](#jsonlite)
+      - [The one I’ve chosen it](#the-one-ive-chosen-it)
   - [Functions to query the API](#functions-to-query-the-api)
       - [franchise](#franchise)
       - [franchise team](#franchise-team)
@@ -24,6 +25,14 @@ June 12, 2020
         variable](#creation-of-relevant-new-variable)
       - [Calculation of relevant numeric & graphical
         summaries](#calculation-of-relevant-numeric-graphical-summaries)
+          - [Some contingency tables and numeric
+            summaries](#some-contingency-tables-and-numeric-summaries)
+          - [A side-by-side bar plot with
+            coloring](#a-side-by-side-bar-plot-with-coloring)
+          - [A side-by-side box plots with
+            coloring](#a-side-by-side-box-plots-with-coloring)
+          - [A scatter plots with
+            coloring](#a-scatter-plots-with-coloring)
 
 ## Data type (JSON) description
 
@@ -31,8 +40,8 @@ June 12, 2020
 
 JSON, short for JavaScript Object Notation, is a data exchange format.
 It is a data format popularized by Douglas Crockford in 2001
-(<https://www.json.org/json-en.html>), became the mainstream data format
-since 2005-2006. JSON comes in a text format that is completely
+(<https://www.json.org/json-en.html>), which became the mainstream data
+format since 2005-2006. JSON comes in a text format that is completely
 independent of any programming language, making it an ideal data
 exchange language. JSON is the syntax for storing and exchanging textual
 information, similar to XML.
@@ -101,14 +110,16 @@ versions. Like `RJSONIO`, it also provides functions, such as
 It could also interact with web APIs, building pipelines and streaming
 data between R and JSON.
 
+### The one I’ve chosen it
+
 I would choose `jsonlite` in to practice for several reasons:
 
   - `jsonlite` provides base64\_dec and base64\_enc to convert between
     raw vectors to text while the other two packages don’t have this
-    function.
+    function.  
   - Validating strings in JSON format is provided by `RJSONIO`
     (isJSONValid function) and `jsonlite` (validate) while `rjson`
-    doesn’t have.
+    doesn’t have.  
   - `jsonlite` also provides the capability of re-formatting JSON file
     into: 1). structure with indentation added from prettify, 2). file
     by removing all unnecessary indentation and white spaces which is
@@ -564,6 +575,8 @@ team <- mutate(team, winRate=wins/gamesPlayed)
 library(ggplot2)
 ```
 
+#### Some contingency tables and numeric summaries
+
 ``` r
 ## a contingency table of active goalies of five franchises
 goalie2 %>% filter(franchiseId<=5) %>% with(table(activePlayer,franchiseName)) ## use 'table()' to create a contingency table
@@ -644,6 +657,8 @@ performance compared to LAK goalies. From the perspective of SD and
 Range, MC goalkeeper’s strength is more uneven, while LAK goalkeeper’s
 strength is more balanced.
 
+#### A side-by-side bar plot with coloring
+
 ``` r
 ## a bar plot of skaters of each franchise
 p <- ggplot(data = skater2,
@@ -660,6 +675,8 @@ leading the way with nearly 1,000. Some, like the Montreal Wanderers,
 Vegas Golden Knights, Phiadelphia Flyers and Hamilton Tigers, are small
 and pitiable. If you want to know the exact number of players for these
 teams, you can filter them using interaction in Table 5.
+
+#### A side-by-side box plots with coloring
 
 ``` r
 ## a box plot of skater's goals of each franchise
@@ -680,9 +697,11 @@ but the goals of the Montreal Wanderers are ridiculously low, while the
 goals of the Vegas Golden Knights team are at the top of all the teams,
 so it can be said that they are small but good.
 
+#### A scatter plots with coloring
+
 ```` r
 ## a scatter plot of skater's points of each franchise
-## to better present the figure, you can assign its size by ```{r, fig.height=4, fig.width=5} 
+## to better present the figure, you can assign its size by ```{r, fig.height=7, fig.width=10} 
 sp <- ggplot(data = skater2, 
              mapping = aes(
                x = assists,
