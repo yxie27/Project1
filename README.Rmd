@@ -62,8 +62,7 @@ For further information, [this page](https://rstudio-pubs-static.s3.amazonaws.co
 ## Functions to query the API
 
 ```{r message=FALSE, warning=FALSE}
-## If you need, please download:
-## xfun::session_info('DT')
+## Load the packages
 library(DT)
 library(tidyverse)
 library(httr)
