@@ -2,7 +2,9 @@
 title: "Project 1"
 author: "Yilin Xie"
 date: "June 12, 2020"
-output: rmarkdown::github_document
+output: 
+  rmarkdown::github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}

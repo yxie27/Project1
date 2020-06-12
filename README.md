@@ -3,6 +3,28 @@ Project 1
 Yilin Xie
 June 12, 2020
 
+  - [Data type (JSON) description](#data-type-json-description)
+      - [What it is](#what-it-is)
+      - [Where it gets used](#where-it-gets-used)
+      - [Why it is a good way to store
+        data](#why-it-is-a-good-way-to-store-data)
+  - [Discussion of relevant R
+    packages](#discussion-of-relevant-r-packages)
+      - [rjson](#rjson)
+      - [RJSONIO](#rjsonio)
+      - [jsonlite](#jsonlite)
+  - [Functions to query the API](#functions-to-query-the-api)
+      - [franchise](#franchise)
+      - [franchise team](#franchise-team)
+      - [franchise season records](#franchise-season-records)
+      - [franchise goalie records](#franchise-goalie-records)
+      - [franchise skater records](#franchise-skater-records)
+  - [Data analysis](#data-analysis)
+      - [Creation of relevant new
+        variable](#creation-of-relevant-new-variable)
+      - [Calculation of relevant numeric & graphical
+        summaries](#calculation-of-relevant-numeric-graphical-summaries)
+
 ## Data type (JSON) description
 
 ### What it is
@@ -179,8 +201,7 @@ head(team$data,
 
 You can assign a certain value to specify the franchise in column
 **franchiseId** and **franchiseName**. This is applicable to the
-following three
-tables.
+following three tables.
 
 ``` r
 ## combine all JSON files so that make it possible to apply interactive filtering
@@ -563,8 +584,7 @@ Toronto Maple Leafs, respectively. This table counts active goalie
 players of each franchise. Three of franchises have no active players,
 and the total munber of goalie players is small. Toronto Maple Leafs,
 besides the total number of players is higher than that of Montreal
-Canadiens, the proportion of active players is
-higher.
+Canadiens, the proportion of active players is higher.
 
 ``` r
 ## comparison of goalies of Montréal Canadiens and Los Angeles Kings by numeric summaries of two franchises
@@ -588,8 +608,7 @@ apply(as.matrix(MC), 2,
 | max   |    1.0000000 |    682.0000 | 250.00000 | 13.000000 | 348.00000 |               11.000000 |         53.00000 |                57.00000 |          44.00000 |
 | range |    1.0000000 |    681.0000 | 250.00000 | 12.000000 | 348.00000 |               10.000000 |         47.00000 |                50.00000 |          44.00000 |
 
-Table 7a. Summary of goalies of Montréal
-Canadiens
+Table 7a. Summary of goalies of Montréal Canadiens
 
 ``` r
 LAK <- goalie2 %>% filter(franchiseId == "14") %>% select(activePlayer, gamesPlayed, losses, seasons, wins, mostGoalsAgainstOneGame, mostSavesOneGame, mostShotsAgainstOneGame, mostWinsOneSeason) 
