@@ -2,10 +2,12 @@
 title: "Project 1"
 author: "Yilin Xie"
 date: "June 12, 2020"
-output: 
-  rmarkdown::github_document:
-    toc: yes
+output: rmarkdown::github_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Data type (JSON) description
 
@@ -42,9 +44,9 @@ Primaryly, there are three packages used for reading JSON data into R, which are
 
 ### jsonlite
 
-`jsonlite` started from 2013 but has been completely rewritten in recent versions. Like `RJSONIO`, it also provides functions, such as *fromJSON()* and *toJSON() *to convert between JSON data and R objects. It could also interact with web APIs, building pipelines and streaming data between R and JSON.
+`jsonlite` started from 2013 but has been completely rewritten in recent versions. Like `RJSONIO`, it also provides functions, such as *fromJSON()* and *toJSON() *to convert between JSON data and R objects. It could also interact with web APIs, building pipelines and streaming data between R and JSON.  
 
-I would choose `jsonlite` in to practice for several reasons:
+I would choose `jsonlite` in to practice for several reasons:  
 
   * `jsonlite` provides base64_dec and base64_enc to convert between raw vectors to text while the other two packages don’t have this function. 
   * Validating strings in JSON format is provided by `RJSONIO` (isJSONValid function) and `jsonlite` (validate) while `rjson` doesn’t have. 
@@ -70,8 +72,8 @@ library(jsonlite)
 franchise_url <- "https://records.nhl.com/site/api/franchise" 
 franchise <- GET(franchise_url) %>% content("text") %>% fromJSON(flatten=TRUE)
 ```
-```{r results = 'asis'}
-knitr::kable(franchise$data, 
+```{r}
+head(franchise$data, 
              caption = "Table 1.Franchise") ## assign the name of table by 'caption = ""'
 ```
 
@@ -82,8 +84,8 @@ knitr::kable(franchise$data,
 team_url <- "https://records.nhl.com/site/api/franchise-team-totals"
 team <- GET(team_url) %>% content("text") %>% fromJSON(flatten=TRUE)
 ```
-```{r results = 'asis'}
-knitr::kable(team$data, 
+```{r}
+head(team$data, 
              caption = "Table 2.Total stats for every franchise")
 ```
 
@@ -106,7 +108,7 @@ season2 <- season[new_col] ## arrange the columns in the specified order
 ```
 ```{r}
 ## interactive table for users to specify the franchise
-datatable(season2, 
+head(season2, 
           filter = 'top', 
           rownames = FALSE,
           caption = 'Table 3.Season records for a specific franchise')
@@ -127,7 +129,7 @@ new_col <- c(col[1], "franchiseId", "franchiseName", col[2:length(col)])
 goalie2 <- goalie[new_col]
 ```
 ```{r}
-datatable(goalie2, 
+head(goalie2, 
           filter = 'top', 
           rownames = FALSE,
           caption = 'Table 4.Goalie records for a specified franchise')
@@ -148,7 +150,7 @@ new_col <- c(col[1], "franchiseId", "franchiseName", col[2:length(col)])
 skater2 <- skater[new_col]
 ```
 ```{r warning=FALSE}
-datatable(skater2, 
+head(skater2, 
           filter = 'top',
           rownames = FALSE,
           caption = 'Table 5.Skater records for the specified franchise')
@@ -239,4 +241,6 @@ sp
 
 ```
 
-Figure 3 shows the relationship between goals and assists of each skater. On the whole, the number of goals has a positive correlation with the number of assists gained, about assists =1.5*goals. But for each player's specific performance, the total number of assists and points the total difference is still relatively large. Most players have less than 300 assists and score less than 200 points.
+Figure 3 shows the relationship between goals and assists of each skater. On the whole, the number of goals has a positive correlation with the number of assists gained, about assists =1.5*goals. But for each player's specific performance, the total number of assists and points the total difference is still relatively large. Most players have less than 300 assists and score less than 200 points.  
+
+
