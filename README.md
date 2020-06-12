@@ -132,8 +132,7 @@ gives readers a brief comparison between three packages.
 ## Functions to query the API
 
 ``` r
-## If you need, please download:
-## xfun::session_info('DT')
+## Load the packages
 library(DT)
 library(tidyverse)
 library(httr)
